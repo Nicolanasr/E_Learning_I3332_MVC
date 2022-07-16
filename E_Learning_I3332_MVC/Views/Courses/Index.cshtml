@@ -39,7 +39,7 @@
                         </td>
                         <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.Credits</td>
                         <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
-                            <a class="rounded-md bg-primary text-white px-4 py-2">View Course</a>
+                            <a asp-controller="courses" asp-action="details" asp-route-course_id="@course.CourseId" class="rounded-md bg-primary text-white px-4 py-2">View Course</a>
                         </td>
                     </tr>    
                 }

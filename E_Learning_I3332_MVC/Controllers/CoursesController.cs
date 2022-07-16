@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using E_Learning_I3332_MVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,6 @@ namespace E_Learning_I3332_MVC.Controllers
         {
             _db = db;
         }
-
 
         [Authorize]
         [Route("courses")]
@@ -94,6 +94,55 @@ namespace E_Learning_I3332_MVC.Controllers
                 _db.SaveChanges();
             }
 
+            return Redirect("/courses");
+        }
+
+
+        [Authorize]
+        [Route("courses/{course_id}")]
+        public ActionResult Details(int course_id)
+        {
+            var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            var userId = claimsIdentity?.FindFirst("userId");
+            // var role_id = claimsIdentity?.FindFirst("role_id");
+            var role = claimsIdentity?.FindFirst("role");
+            var TS_Id = claimsIdentity?.FindFirst("TS_Id");
+
+            if (userId != null && _db.Courses != null && _db.Teaches != null && _db.StudentCourses != null)
+            {
+                Courses? courseDetails = _db.Courses
+                                        .Include(t => t.Specialization)
+                                        .Where(course => course.CourseId == course_id).FirstOrDefault();
+
+                if (courseDetails == null)
+                {
+                    return Redirect("/courses");
+                }
+
+                Teaches? teacherDetails = _db.Teaches
+                                        .Include(teach => teach.Teacher)
+                                        .ThenInclude(teacher => teacher.User)
+                                        .Where(teach => teach.CourseId == course_id).FirstOrDefault();
+
+                ViewData["teacherDetails"] = teacherDetails?.Teacher;
+
+                List<StudentCourses>? enrolledStudents = _db.StudentCourses
+                                            .Include(sCourse => sCourse.Student)
+                                            .ThenInclude(std => std.User)
+                                            .Where(sCourse => sCourse.CourseId == course_id).ToList();
+
+                ViewData["enrolledStudents"] = enrolledStudents;
+
+                // for students
+                if (role?.Value.ToString() == "student" && TS_Id?.Value != null && _db.StudentCourses != null)
+                {
+                    StudentCourses? studentCourseDetails = _db.StudentCourses.Where(sCourse => sCourse.StudentId == int.Parse(TS_Id.Value) && sCourse.CourseId == course_id).FirstOrDefault();
+                    ViewData["studentCourseDetails"] = studentCourseDetails;
+                }
+
+                ViewData["courseDetails"] = courseDetails;
+                return View();
+            }
 
             return Redirect("/courses");
         }

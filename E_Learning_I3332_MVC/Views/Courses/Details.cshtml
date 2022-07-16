@@ -1,0 +1,85 @@
+@model Courses
+
+@{
+    ViewData["Title"] = "Courses";
+
+    Courses courseDetails = ViewData["courseDetails"] as Courses;
+    StudentCourses? studentCourseDetails = ViewData["studentCourseDetails"] as StudentCourses;
+    Teachers? teacherDetails = ViewData["teacherDetails"] as Teachers;
+    List<StudentCourses>? enrolledStudents  = ViewData["enrolledStudents"] as List<StudentCourses>;
+}
+
+<div class="container my-16">
+    <div class="flex gap-4">
+        <div class="relative w-32">
+            <img class="absolute top-0 bottom-0 left-0 right-0 object-cover h-full w-full" src="https://designshack.net/wp-content/uploads/placeholder-image.png" alt="">
+        </div>
+        <div class="p-2 flex-1">
+            <div>
+                <h2 class="text-3xl font-bold capitalize text-gray-600">
+                    @courseDetails.CourseName
+                    <span class="text-gray-400 text-sm">#@courseDetails.CourseId</span>
+                </h2>
+            </div>
+            <hr class="my-2">
+            <div class="flex gap-4 flex-wrap justify-between">
+                <div>
+                    <h4 class="text-gray-500 text-sm">Teacher</h4>
+                    <a class="font-medium text-gray-700">
+                        @if(teacherDetails != null && teacherDetails.User != null) {
+                            <span>@teacherDetails.User.FirstName @teacherDetails.User.LastName</span>
+                        }
+                        else {
+                            <span>--</span>
+                        }
+                    </a>
+                </div>
+                <div>
+                    <h4 class="text-gray-500 text-sm ">Specialization</h4>
+                    <p class="font-medium text-gray-700">@courseDetails.Specialization.SpecializationName</p>
+                </div>
+                <div>
+                    <h4 class="text-gray-500 text-sm ">Credits</h4>
+                    <p class="font-medium text-gray-700">@courseDetails.Credits</p>
+                </div>
+                @if(studentCourseDetails != null){
+                    <div>
+                        <h4 class="text-gray-500 text-sm ">Year/Semester</h4>
+                        <p class="font-medium text-gray-700">@studentCourseDetails.Year/ @studentCourseDetails.Semester</p>
+                    </div>
+                    <div>
+                        <h4 class="text-gray-500 text-sm">Enrolment Date</h4>
+                        <p class="font-medium text-gray-700">@studentCourseDetails.EntolementDate</p>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+    <hr class="my-6">
+    <div>
+        <h2 class="font-medium text-xl">Enrolled Students: <span class="text-xs text-gray-300">(Total: @enrolledStudents.Count)</span></h2>
+
+        <table class="min-w-full">
+            <thead class="bg-white border-b">
+                <th scope="col" class="text-gray-900 px-6 py-4 text-left font-bold">#</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Student</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Email</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Enrolment Date</th>
+            </thead>
+
+            <tbody>
+                @foreach (var enrolment in enrolledStudents)
+                {
+                    <tr class="bg-gray-100 border-b">
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap ">@enrolment.StudentId</td>
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap ">@enrolment.Student.User.FirstName @enrolment.Student.User.LastName </td>
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap ">@enrolment.Student.User.Email</td>
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap ">@enrolment.EntolementDate</td>
+                    </tr>    
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
