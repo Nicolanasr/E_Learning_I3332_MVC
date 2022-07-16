@@ -1,0 +1,111 @@
+﻿@{
+    var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+
+    string email = "";
+    string role = "";
+    string idByRole = "";
+
+    if (claimsIdentity != null)
+    {
+        var emailId = claimsIdentity.FindFirst("email");
+        if(emailId != null) 
+        {
+            email = emailId.Value;
+        }
+
+        var roleId = claimsIdentity.FindFirst("role");
+        if(roleId != null) 
+        {
+            role = roleId.Value;
+        }
+
+        var stdTeachId = claimsIdentity.FindFirst("TS_Id");
+        if(stdTeachId != null) 
+        {
+            idByRole = stdTeachId.Value;
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - E_Learning_I3332_MVC</title>
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" integrity="sha512-wnea99uKIC3TJF7v4eKk4Y+lMz2Mklv18+r4na2Gn1abDRPPOeef95xTzdwGD9e6zXJBteMIhZ1+68QC5byJZw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+
+
+<body>
+    <div class="flex items-stretch" >
+        <aside id="sidebar" role="menubar" class="w-80 transition-all bg-primary text-white relative min-h-screen ">
+            <nav role="menu" class="p-8">
+                @* menu button *@
+                <div class="absolute -z-10 hidden -ml-80"></div>
+                <button type="button" id="sidebarCollapse" class="absolute w-14 h-14 right-0 translate-x-[40%] flex items-center justify-end pr-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                    </svg>
+				</button>
+                <div>
+                    <a asp-controller="home" asp-action="index" >
+                        <img class="object-contain h-14 mb-2" src="~/assets/images/logo.svg" alt="">
+                    </a>
+                    @if(User.Identity.IsAuthenticated)
+                    {
+                        <a asp-controller="" asp-action="">
+                            <h5 class="text-base tracking-wide text-white font-bold">@email <span class="text-sm">(@role)</span></h5>
+                            <span class="text-xs font-light">ID: #@idByRole</span>
+                        </a>
+                    }
+                </div>
+                <hr class="my-6 border-secondary opacity-30">
+                <nav>
+                    @if(role == "student")
+                    {
+                        <ul>
+                            <li><a class="my-2 block w-fit hover:text-blue-400 transition" asp-controller="courses" asp-action="index">Courses</a></li>
+                            <li><a href="" class="my-2 block w-fit hover:text-blue-400 transition">Grades</a></li>
+                            <li><a href="" class="my-2 block w-fit hover:text-blue-400 transition">Schedule</a></li>
+                        </ul>
+                    }
+                    @if(role == "teacher")
+                    {
+                        <ul>
+                            <li><a class="my-2 block w-fit hover:text-blue-400 transition" asp-controller="Courses" asp-action="index">Courses</a></li>
+                            <li><a href="" class="my-2 block w-fit hover:text-blue-400 transition">Grades</a></li>
+                            <li><a href="" class="my-2 block w-fit hover:text-blue-400 transition">Schedule</a></li>
+                        </ul>
+                    }
+                </nav>
+                <hr class="my-6 border-secondary opacity-30">
+                <ul>
+                    @if(User.Identity.IsAuthenticated)
+                    {
+                        <li>
+                            <a asp-controller="authentication" asp-action="logout">Logout</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="flex-1 ml-8" role="main" >
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

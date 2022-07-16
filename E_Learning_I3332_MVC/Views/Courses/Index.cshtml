@@ -1,0 +1,92 @@
+@model Courses
+
+@{
+    ViewData["Title"] = "Courses";
+    
+    IEnumerable<int?> enrolled = ViewData["enrolled"] as IEnumerable<int?>;
+    Dictionary<string, string> coursesTeachers = ViewData["coursesTeachers"] as Dictionary<string, string> ;
+    List<Courses> AllCourses = ViewData["AllCourses"] as List<Courses>;
+
+}
+
+<div class="container my-16 ">
+    <h1 class="text-2xl font-bold pb-2 w-fit" style="width: fit-content;">Enrolled courses:</h1>
+    <table class="min-w-full">
+        <thead class="bg-white border-b">
+            <th scope="col" class="text-gray-900 px-6 py-4 text-left font-bold">#</th>
+            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Course</th>
+            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Teacher</th>
+            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Credits</th>
+            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left"></th>
+        </thead>
+
+        <tbody>
+            @foreach (var course in AllCourses)
+            {
+                string value;
+                @if(enrolled.Contains(course.CourseId))
+                {
+                    <tr class="bg-gray-100 border-b">
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap font-bold">@course.CourseId</td>
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.CourseName</td>
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
+                            @if(coursesTeachers.TryGetValue(course.CourseId.ToString(), out value)){
+                                <span>@value</span>
+                            }
+                            else {
+                                <span>--</span>
+                            }
+                        </td>
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.Credits</td>
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
+                            <a class="rounded-md bg-primary text-white px-4 py-2">View Course</a>
+                        </td>
+                    </tr>    
+                }
+            }
+        </tbody>
+    </table>
+
+    <hr class="my-10 border" />
+
+    <h1 class="text-2xl font-bold pb-2 w-fit" style="width: fit-content;">Discover courses:</h1>
+    <table class="min-w-full">
+        <thead class="bg-white border-b">
+            <th scope="col" class="text-gray-900 px-6 py-4 text-left font-bold">#</th>
+            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Course</th>
+            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Teacher</th>
+            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Credits</th>
+            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left"></th>
+        </thead>
+
+        <tbody>
+            @foreach (var course in AllCourses)
+            {
+                string value;
+                @if(!enrolled.Contains(course.CourseId))
+                {
+                    <tr class="bg-gray-100 border-b">
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap font-bold">@course.CourseId</td>
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.CourseName</td>
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
+                            @if(coursesTeachers.TryGetValue(course.CourseId.ToString(), out value)){
+                                <span>@value</span>
+                            }
+                            else {
+                                <span>--</span>
+                            }
+
+                        </td>
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.Credits</td>
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
+                            <form asp-controller="courses" asp-action="enroll">
+                                <input type="text" asp-for="CourseId" value="@course.CourseId" hidden required>
+                                <button type="submit" class="rounded-md bg-primary text-white px-4 py-2">Enroll</button>
+                            </form>
+                        </td>
+                    </tr>    
+                }
+            }
+         </tbody>
+    </table>
+</div>
