@@ -5,10 +5,53 @@
 }
 
 
-<div class="">
+<div class="text-gray-800">
     <header>
         <div class="h-96 w-full relative">
             <img class="absolute top-0 bottom-0 left-0 right-0 object-cover h-full w-full" src="https://designshack.net/wp-content/uploads/placeholder-image.png" alt="">
         </div>
+        <div class="relative h-48 w-48 rounded-full overflow-hidden ml-12 border" style="transform: translateY(-50%);">
+            <img class="absolute top-0 bottom-0 left-0 right-0 object-cover h-full w-full" src="https://www.bsn.eu/wp-content/uploads/2016/12/user-icon-image-placeholder-300-grey.jpg" alt="">
+        </div>
     </header>
+
+    <div class="container -mt-14">
+        <h2 class="text-2xl font-medium text-gray-800">@teacherDetails.User.FirstName @teacherDetails.User.LastName</h2>
+        <div class="mt-4 flex justify-between">
+            <div class="flex-1">
+                <h3 class="text-lg font-medium">General Info</h3>
+                <div>
+                    <span>Specialization:</span>
+                    <a class="text-gray-500">@teacherDetails.Specialization.SpecializationName</a>
+                </div>
+                <div>
+                    <span>Years of experience:</span>
+                    <a class="text-gray-500">@teacherDetails.YearsOfExperience Years</a>
+                </div>
+                <div>
+                    <span>Joined Date:</span>
+                    <a class="text-gray-500">@teacherDetails.JoinedDate</a>
+                </div>
+            </div>
+
+            <div class="flex-1">
+                <h3 class="text-lg font-medium">Contact Info</h3>
+                <div>
+                    <span>Email:</span>
+                    <a href="mailto:@teacherDetails.User.Email" class="text-gray-500">@teacherDetails.User.Email</a>
+                </div>
+                <div>
+                    <span>Phone number:</span>
+                    <a href="tel:@teacherDetails.PhoneNumer" class="text-gray-500">@teacherDetails.PhoneNumer</a>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-6">
+
+        <div>
+            <h3 class="text-xl font-medium">Teaching courses:</h3>
+        </div>
+
+    </div>
 </div>

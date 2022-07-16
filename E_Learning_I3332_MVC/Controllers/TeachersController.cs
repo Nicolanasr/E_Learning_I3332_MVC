@@ -23,13 +23,14 @@ namespace E_Learning_I3332_MVC.Controllers
 
         // GET: Teachers/Details/5
         [Authorize]
-        [Route("teacher/{teacher_id}")]
-        public IActionResult Details(int teacher_id)
+        [Route("teachers/{teacher_id}")]
+        public ActionResult Details(int teacher_id)
         {
             if (_db.Teachers != null)
             {
                 Teachers? teacherDetails = _db.Teachers
                                             .Include(teacher => teacher.User)
+                                            .Include(teacher => teacher.Specialization)
                                             .Where(teacher => teacher.TeacherId == teacher_id).FirstOrDefault();
 
                 if (teacherDetails == null)
