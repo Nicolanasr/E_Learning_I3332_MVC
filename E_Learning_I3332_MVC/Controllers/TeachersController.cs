@@ -26,7 +26,7 @@ namespace E_Learning_I3332_MVC.Controllers
         [Route("teachers/{teacher_id}")]
         public ActionResult Details(int teacher_id)
         {
-            if (_db.Teachers != null)
+            if (_db.Teachers != null && _db.Teaches != null)
             {
                 Teachers? teacherDetails = _db.Teachers
                                             .Include(teacher => teacher.User)
@@ -38,6 +38,18 @@ namespace E_Learning_I3332_MVC.Controllers
                     return NotFound();
                 }
                 ViewData["teacherDetails"] = teacherDetails;
+
+                List<Teaches>? teachingCourses = _db.Teaches
+                                            .Include(teaches => teaches.Course)
+                                            .Where(teacher => teacher.TeacherId == teacher_id).ToList();
+
+                if (teacherDetails == null)
+                {
+                    return NotFound();
+                }
+
+                ViewData["teacherDetails"] = teacherDetails;
+                ViewData["teachingCourses"] = teachingCourses;
 
                 return View();
             }

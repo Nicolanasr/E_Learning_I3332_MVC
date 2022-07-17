@@ -54,18 +54,40 @@ namespace E_Learning_I3332_MVC.Controllers
                 {
                     coursesTeachers.Add(item.Course.CourseId.ToString(), item?.Teacher?.User?.FirstName + item?.Teacher?.User?.LastName);
                 }
-
             }
 
-            IEnumerable<int?>? studentEnrolledCourse = null;
             if (role?.Value.ToString() == "student" && _db.StudentCourses != null && TS_Id != null)
             {
-                studentEnrolledCourse = _db.StudentCourses.Where(sc => sc.StudentId.ToString() == TS_Id.Value.ToString()).ToList().Select(x => x.CourseId);
+                IEnumerable<int?>? studentEnrolledCourse = _db.StudentCourses.Where(sc => sc.StudentId.ToString() == TS_Id.Value.ToString()).ToList().Select(x => x.CourseId);
+                ViewData["enrolled"] = studentEnrolledCourse;
+            }
+            else if (role?.Value.ToString() == "teacher" && _db.Teaches != null && TS_Id != null && _db.StudentCourses != null)
+            {
+                IEnumerable<int?>? teachersCourses = _db.Teaches.Where(teach => teach.TeacherId.ToString() == TS_Id.Value.ToString()).ToList().Select(x => x.CourseId);
+                List<StudentCourses> teachesCoursesDetailsList = _db.StudentCourses
+                                                                .Include(sc => sc.Course)
+                                                                .Where(a => teachersCourses.Any(b => b == a.CourseId))
+                                                                .ToList();
+
+                Dictionary<int?, int> teachesCoursesDetails = new();
+                foreach (var item in teachesCoursesDetailsList)
+                {
+                    if (teachesCoursesDetails.ContainsKey(item.CourseId))
+                    {
+                        teachesCoursesDetails[item.CourseId] = teachesCoursesDetails[item.CourseId] + 1;
+                    }
+                    else
+                    {
+                        teachesCoursesDetails.Add(item.CourseId, 1);
+                    }
+                }
+
+                ViewData["teachesCoursesDetails"] = teachesCoursesDetails;
+                ViewData["teaches"] = teachersCourses;
             }
 
             ViewData["coursesTeachers"] = coursesTeachers;
             ViewData["AllCourses"] = AllCourses;
-            ViewData["enrolled"] = studentEnrolledCourse;
 
             return View();
         }
@@ -73,7 +95,7 @@ namespace E_Learning_I3332_MVC.Controllers
         [Authorize]
         [Route("courses/enroll")]
         [HttpPost]
-        public ActionResult Enroll(Courses course)
+        public ActionResult Enroll(Courses course, string semester)
         {
 
             var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
@@ -86,7 +108,7 @@ namespace E_Learning_I3332_MVC.Controllers
                     Student = _db.Students.Find(int.Parse(stdId.Value)),
                     Course = _db.Courses.Find(course.CourseId),
                     Year = DateTime.Now.Year,
-                    Semester = "winter",
+                    Semester = semester,
                     EntolementDate = DateTime.Now,
                 };
 

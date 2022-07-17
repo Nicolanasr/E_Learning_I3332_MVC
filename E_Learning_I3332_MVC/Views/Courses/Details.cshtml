@@ -25,7 +25,7 @@
             <div class="flex gap-4 flex-wrap justify-between">
                 <div>
                     <h4 class="text-gray-500 text-sm">Teacher</h4>
-                    <a asp-controller="teachers" asp-action="details" asp-route-teacher_id="@teacherDetails.TeacherId" asp class="font-medium text-gray-700">
+                    <a class="text-blue-500" asp-controller="teachers" asp-action="details" asp-route-teacher_id="@teacherDetails.TeacherId" asp class="font-medium text-gray-700">
                         @if(teacherDetails != null && teacherDetails.User != null) {
                             <span>@teacherDetails.User.FirstName @teacherDetails.User.LastName</span>
                         }
@@ -73,7 +73,9 @@
                 {
                     <tr class="bg-gray-100 border-b">
                         <td class="text-gray-900 px-6 py-4 whitespace-nowrap ">@enrolment.StudentId</td>
-                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap ">@enrolment.Student.User.FirstName @enrolment.Student.User.LastName </td>
+                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap ">
+                            <a class="text-blue-500" asp-controller="students" asp-action="details" asp-route-student_id="@enrolment.Student.StudentId">@enrolment.Student.User.FirstName @enrolment.Student.User.LastName </a>
+                        </td>
                         <td class="text-gray-900 px-6 py-4 whitespace-nowrap ">@enrolment.Student.User.Email</td>
                         <td class="text-gray-900 px-6 py-4 whitespace-nowrap ">@enrolment.EntolementDate</td>
                     </tr>    

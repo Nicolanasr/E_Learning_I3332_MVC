@@ -1,0 +1,29 @@
+@{
+    ViewData["Title"] = "Grades";
+
+    List<Teaches> coursesByTeacher = ViewData["coursesByTeacher"] as List<Teaches>;
+    List<StudentCourses> enrolledCourses = ViewData["enrolledCourses"] as List<StudentCourses>;
+}
+
+<div class="container my-20 ">
+    <h1 class="text-3xl font-bold">Grades </h1>
+
+    <h4 class="text-xl pb-2 border-b mt-4 mb-2">Select a course to see its grades: </h4>
+    <ul class="list-disc">
+        @if(coursesByTeacher != null) {
+            @foreach (var course in coursesByTeacher)
+            {
+                <li>
+                    <a asp-controller="grades" asp-action="gradesbycourse" asp-route-courseId="@course.CourseId">@course.Course.CourseName</a>
+                </li> 
+            }
+        } else if(enrolledCourses != null) {
+            @foreach (var course in enrolledCourses)
+            {
+                <li>
+                    <a asp-controller="grades" asp-action="gradesbycourse" asp-route-courseId="@course.CourseId">@course.Course.CourseName</a>
+                </li> 
+            }
+        }
+    </ul>
+</div>

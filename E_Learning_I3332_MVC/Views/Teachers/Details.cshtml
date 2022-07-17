@@ -2,6 +2,7 @@
     ViewData["Title"] = "Teacher";
 
     Teachers teacherDetails = ViewData["teacherDetails"] as Teachers;
+    List<Teaches> teachingCourses = ViewData["teachingCourses"] as List<Teaches>;
 }
 
 
@@ -15,14 +16,14 @@
         </div>
     </header>
 
-    <div class="container -mt-14">
+    <div class="container -mt-14 mb-20">
         <h2 class="text-2xl font-medium text-gray-800">@teacherDetails.User.FirstName @teacherDetails.User.LastName</h2>
         <div class="mt-4 flex justify-between">
             <div class="flex-1">
                 <h3 class="text-lg font-medium">General Info</h3>
                 <div>
                     <span>Specialization:</span>
-                    <a class="text-gray-500">@teacherDetails.Specialization.SpecializationName</a>
+                    <a class="text-gray-500 capitalize">@teacherDetails.Specialization.SpecializationName</a>
                 </div>
                 <div>
                     <span>Years of experience:</span>
@@ -51,6 +52,31 @@
 
         <div>
             <h3 class="text-xl font-medium">Teaching courses:</h3>
+
+            <table class="min-w-full">
+                <thead class="bg-white border-b">
+                    <th scope="col" class="text-gray-900 px-6 py-4 text-left font-bold">#</th>
+                    <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Course Name</th>
+                    <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Year/Semester</th>
+                    <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Credits</th>
+                    <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left"></th>
+                </thead>
+
+                <tbody>
+                    @foreach (var courseT in teachingCourses)
+                    {
+                        <tr class="bg-gray-100 border-b capitalize">
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap font-bold">@courseT.CourseId</td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@courseT.Course.CourseName</td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@courseT.Year/ @courseT.Semester</td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@courseT.Course.Credits</td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
+                                <a asp-controller="courses" asp-action="details" asp-route-course_id="@courseT.CourseId" class="rounded-md bg-primary text-white px-4 py-2">View Course</a>
+                            </td>
+                        </tr>    
+                    }
+                </tbody>
+            </table>
         </div>
 
     </div>

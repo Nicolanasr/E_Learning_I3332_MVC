@@ -7,10 +7,16 @@ namespace E_Learning_I3332_MVC.Controllers;
 
 public class HomeController : Controller
 {
-    [Authorize]
     public IActionResult Index()
     {
-        return View();
+        if (User.Identity != null && !User.Identity.IsAuthenticated)
+        {
+            return View();
+        }
+        else
+        {
+            return Redirect("/courses");
+        }
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -10,6 +10,7 @@ public class MySQLDBContext : DbContext
     public DbSet<Specializations>? Specializations { get; set; }
     public DbSet<Teaches>? Teaches { get; set; }
     public DbSet<StudentCourses>? StudentCourses { get; set; }
+    public DbSet<Grades>? Grades { get; set; }
 
     public MySQLDBContext(DbContextOptions<MySQLDBContext> options) : base(options) { }
 }

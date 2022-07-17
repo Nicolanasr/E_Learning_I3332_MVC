@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using E_Learning_I3332_MVC.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using E_Learning_I3332_MVC.Data;
-using E_Learning_I3332_MVC.Models;
 
 namespace E_Learning_I3332_MVC.Controllers
 {
@@ -51,6 +46,3 @@ namespace E_Learning_I3332_MVC.Controllers
         }
     }
 }
-
-internal class AuthorizeAttribute : Attribute
-{ }

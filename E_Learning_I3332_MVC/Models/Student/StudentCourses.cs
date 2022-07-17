@@ -29,6 +29,9 @@ public class StudentCourses
     [Required]
     public DateTime EntolementDate { get; set; } = DateTime.Now;
 
+    [Required]
+    public IEnumerable<Grades>? StdGrades { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
 }

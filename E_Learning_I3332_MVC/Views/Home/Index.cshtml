@@ -2,8 +2,11 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome </h1>
-    <h3>Please Login or Register!</h3>
-   
+<div class="my-20 text-center">
+    <h1 class="text-4xl font-bold">Welcome </h1>
+    <h3 class="text-xl font-medium mt-4">
+        Please 
+        <a asp-controller="authentication" asp-action="Login" class="text-blue-500">Login</a> 
+        or <a asp-controller="authentication" asp-action="register" class="text-blue-500">Register</a>!
+    </h3>
 </div>

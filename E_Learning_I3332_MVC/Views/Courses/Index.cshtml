@@ -3,90 +3,159 @@
 @{
     ViewData["Title"] = "Courses";
     
-    IEnumerable<int?> enrolled = ViewData["enrolled"] as IEnumerable<int?>;
+    IEnumerable<int?>? enrolled = ViewData["enrolled"] as IEnumerable<int?>;
+    IEnumerable<int?>? teaches = ViewData["teaches"] as IEnumerable<int?>;
     Dictionary<string, string> coursesTeachers = ViewData["coursesTeachers"] as Dictionary<string, string> ;
     List<Courses> AllCourses = ViewData["AllCourses"] as List<Courses>;
-
+    Dictionary<int?, int> teachesCoursesDetails = ViewData["teachesCoursesDetails"] as Dictionary<int?, int>;
 }
 
-<div class="container my-16 ">
-    <h1 class="text-2xl font-bold pb-2 w-fit" style="width: fit-content;">Enrolled courses:</h1>
-    <table class="min-w-full">
-        <thead class="bg-white border-b">
-            <th scope="col" class="text-gray-900 px-6 py-4 text-left font-bold">#</th>
-            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Course</th>
-            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Teacher</th>
-            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Credits</th>
-            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left"></th>
-        </thead>
-
-        <tbody>
-            @foreach (var course in AllCourses)
-            {
-                string value;
-                @if(enrolled.Contains(course.CourseId))
-                {
-                    <tr class="bg-gray-100 border-b">
-                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap font-bold">@course.CourseId</td>
-                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.CourseName</td>
-                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
-                            @if(coursesTeachers.TryGetValue(course.CourseId.ToString(), out value)){
-                                <span>@value</span>
-                            }
-                            else {
-                                <span>--</span>
-                            }
-                        </td>
-                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.Credits</td>
-                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
-                            <a asp-controller="courses" asp-action="details" asp-route-course_id="@course.CourseId" class="rounded-md bg-primary text-white px-4 py-2">View Course</a>
-                        </td>
-                    </tr>    
-                }
-            }
-        </tbody>
-    </table>
-
-    <hr class="my-10 border" />
-
-    <h1 class="text-2xl font-bold pb-2 w-fit" style="width: fit-content;">Discover courses:</h1>
-    <table class="min-w-full">
-        <thead class="bg-white border-b">
-            <th scope="col" class="text-gray-900 px-6 py-4 text-left font-bold">#</th>
-            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Course</th>
-            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Teacher</th>
-            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Credits</th>
-            <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left"></th>
-        </thead>
-
-        <tbody>
-            @foreach (var course in AllCourses)
-            {
-                string value;
-                @if(!enrolled.Contains(course.CourseId))
-                {
-                    <tr class="bg-gray-100 border-b">
-                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap font-bold">@course.CourseId</td>
-                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.CourseName</td>
-                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
-                            @if(coursesTeachers.TryGetValue(course.CourseId.ToString(), out value)){
-                                <span>@value</span>
-                            }
-                            else {
-                                <span>--</span>
-                            }
-
-                        </td>
-                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.Credits</td>
-                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
-                            <form asp-controller="courses" asp-action="enroll">
-                                <input type="text" asp-for="CourseId" value="@course.CourseId" hidden required>
-                                <button type="submit" class="rounded-md bg-primary text-white px-4 py-2">Enroll</button>
-                            </form>
-                        </td>
-                    </tr>    
-                }
-            }
-         </tbody>
-    </table>
+<div class="fixed top-0 bottom-0 left-0 right-0 flex z-[99] hidden" id="enrol-modal">
+    <div class="bg-black opacity-20 absolute top-0 bottom-0 left-0 right-0 z-10" onclick="closeEnrolModal()"></div>
+    <div class="bg-white m-auto rounded-md shadow-lg w-full max-w-xl h-56 relative z-20">
+        <form asp-controller="courses" asp-action="enroll" class="p-6">
+            <h2 class="text-xl font-medium text-gray-700">Please select a semester</h2>
+            <br>
+            <select name="semester" id="" class="rounded-sm w-72 px-2 py-1">
+                <option value="winter">Winter</option>
+                <option value="fall">Fall</option>
+                <option value="summer">Summer</option>
+            </select>
+            <br><br>
+            <input type="hidden" asp-for="CourseId" value="" id="courseEnrolId" hidden required>
+            <button type="submit" class="rounded-md bg-primary text-white px-4 py-2">Enroll</button>
+        </form>
+        <button class="absolute top-4 right-4 text-lg font-bold" onclick="closeEnrolModal()">X</button>
+    </div>
 </div>
+
+@if(enrolled != null) {
+    <div class="container my-16 ">
+        <h1 class="text-2xl font-bold pb-2 w-fit" style="width: fit-content;">Enrolled courses:</h1>
+        <table class="min-w-full">
+            <thead class="bg-white border-b">
+                <th scope="col" class="text-gray-900 px-6 py-4 text-left font-bold">#</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Course</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Teacher</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Credits</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left"></th>
+            </thead>
+
+            <tbody>
+                @foreach (var course in AllCourses)
+                {
+                    string value;
+                    @if(enrolled != null && enrolled.Contains(course.CourseId))
+                    {
+                        <tr class="bg-gray-100 border-b">
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap font-bold">@course.CourseId</td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.CourseName</td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
+                                @if(coursesTeachers.TryGetValue(course.CourseId.ToString(), out value)){
+                                    <span>@value</span>
+                                }
+                                else {
+                                    <span>--</span>
+                                }
+                            </td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.Credits</td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
+                                <a asp-controller="courses" asp-action="details" asp-route-course_id="@course.CourseId" class="rounded-md bg-primary text-white px-4 py-2">View Course</a>
+                            </td>
+                        </tr>    
+                    }
+                }
+            </tbody>
+        </table>
+
+        <hr class="my-10 border" />
+
+        <h1 class="text-2xl font-bold pb-2 w-fit" style="width: fit-content;">Discover courses:</h1>
+        <table class="min-w-full">
+            <thead class="bg-white border-b">
+                <th scope="col" class="text-gray-900 px-6 py-4 text-left font-bold">#</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Course</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Teacher</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Credits</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left"></th>
+            </thead>
+
+            <tbody>
+                @foreach (var course in AllCourses)
+                {
+                    string value;
+                    @if(enrolled != null && !enrolled.Contains(course.CourseId))
+                    {
+                        <tr class="bg-gray-100 border-b">
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap font-bold">@course.CourseId</td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.CourseName</td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
+                                @if(coursesTeachers.TryGetValue(course.CourseId.ToString(), out value)){
+                                    <span>@value</span>
+                                }
+                                else {
+                                    <span>--</span>
+                                }
+
+                            </td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.Credits</td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
+                                <button onclick="openEnrolModal(@course.CourseId)" class="rounded-md bg-primary text-white px-4 py-2">Enroll</button>
+                            </td>
+                        </tr>    
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+} else if(teaches != null){
+    <div class="container my-16 ">
+        <h1 class="text-2xl font-bold pb-2 w-fit" style="width: fit-content;">Teaching courses:</h1>
+        <table class="min-w-full">
+            <thead class="bg-white border-b">
+                <th scope="col" class="text-gray-900 px-6 py-4 text-left font-bold">#</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Course</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Enrolled students</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Credits</th>
+                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left"></th>
+            </thead>
+
+            <tbody>
+                @foreach (var course in AllCourses)
+                {
+                    int value;
+                    @if(teaches.Contains(course.CourseId))
+                    {
+                        <tr class="bg-gray-100 border-b">
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap font-bold">@course.CourseId</td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.CourseName</td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
+                                @if(teachesCoursesDetails != null && teachesCoursesDetails.TryGetValue(course.CourseId, out value)){
+                                    <span>@value</span>
+                                }
+                                else {
+                                    <span>--</span>
+                                }
+                            </td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@course.Credits</td>
+                            <td class="text-gray-900 px-6 py-4 whitespace-nowrap">
+                                <a asp-controller="courses" asp-action="details" asp-route-course_id="@course.CourseId" class="rounded-md bg-primary text-white px-4 py-2">View Course</a>
+                            </td>
+                        </tr>    
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<script>
+    const openEnrolModal = (courseId) => {
+        const enrolModal = document.querySelector("#enrol-modal");
+        enrolModal.classList.remove("hidden")
+        enrolModal.querySelector("#courseEnrolId").value = courseId;
+    }
+    const closeEnrolModal = () => {
+        document.querySelector("#enrol-modal").classList.add("hidden")
+    }
+</script>

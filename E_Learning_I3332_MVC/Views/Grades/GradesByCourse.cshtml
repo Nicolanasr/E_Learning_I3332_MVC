@@ -1,0 +1,121 @@
+@model Grades
+
+@{
+    ViewData["Title"] = "Grades";
+
+    List<StudentCourses> studentsEnrolled = ViewData["studentsEnrolled"] as List<StudentCourses>;
+
+    var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+
+    string role = "";
+    if (claimsIdentity != null)
+    {
+        var roleId = claimsIdentity.FindFirst("role");
+        if(roleId != null) 
+        {
+            role = roleId.Value;
+        }
+    }
+}
+
+@if(role == "teacher")
+{
+    <div class="fixed top-0 bottom-0 left-0 right-0 flex z-[99] hidden" id="addGrade-modal">
+        <div class="bg-black opacity-20 absolute top-0 bottom-0 left-0 right-0 z-10" onclick="closeGradeModal()"></div>
+        <div class="bg-white m-auto rounded-md shadow-lg w-full max-w-xl relative z-20">
+            <form asp-controller="grades" asp-action="AddGradeToCourse" class="p-6 validateForm">
+                <h2 class="text-xl font-medium text-gray-700">Add grade</h2>
+                <br>
+                <div class="">
+                    <label for="Grade">Grade:</label>
+                    <input type="number" asp-for="Grade" required class="w-full border-gray-300 rounded-md mt-2">
+                </div>
+
+                <div class="mt-2">
+                    <label for="GradeTotal">Grade Total:</label>
+                    <input type="number" asp-for="GradeTotal" placeholder="/100" required class="w-full border-gray-300 rounded-md mt-2">
+                </div>
+
+                <div class="mt-2">
+                    <label for="GradePercentage">Grade Percentage:</label>
+                    <input type="number" asp-for="GradePercentage" placeholder="%" required class="w-full border-gray-300 rounded-md mt-2">
+                </div>
+
+                <div class="mt-2">
+                    <label for="Type">Type:</label>
+                    <input type="text" asp-for="Type" placeholder="midterm" required class="w-full border-gray-300 rounded-md mt-2">
+                </div>
+
+                <input type="hidden" asp-for="StudentCourseId" id="studentCourseId" required value="">
+                <input type="hidden" id="returnUrl" name="returnUrl" required>
+
+                <br>
+                <button type="submit" class="rounded-md bg-primary text-white px-4 py-2">Add</button>
+            </form>
+            <button class="absolute top-4 right-4 text-lg font-bold" onclick="closeGradeModal()">X</button>
+        </div>
+    </div>
+}
+
+@if (studentsEnrolled != null) 
+{
+    <div class="container my-20 ">
+        <h1 class="text-3xl font-bold">Grades for @studentsEnrolled[0].Course.CourseName</h1>
+
+        <div class="mt-2">
+            @foreach (var enrolledStd in studentsEnrolled)
+            {
+                <hr class="my-6">
+                <div class="px-4 capitalize">
+                    <div class="flex justify-between">
+                        <a class="text-blue-500 text-lg" asp-controller="students" asp-action="details" asp-route-student_id="@enrolledStd.StudentId">@enrolledStd.Student.User.FirstName @enrolledStd.Student.User.LastName</a>
+                        <p class="text-lg">Total Grade: <span class="font-bold">/100</span></p>
+                    </div>
+                    <div>
+                        <h4 class="my-2 underline">Grade details:</h4>
+                        <table class="min-w-full">
+                            <thead class="bg-white border-b">
+                                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Year</th>
+                                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Semester</th>
+                                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Graded</th>
+                                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Grade/Total</th>
+                                <th scope="col" class="font-medium text-gray-900 px-6 py-4 text-left">Grade Percentage <span class="text-xs text-gray-400">%</span></th>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var grades in enrolledStd.StdGrades)
+                                {
+                                    <tr class="bg-gray-100 border-b">
+                                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@enrolledStd.Year</td>
+                                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@enrolledStd.Semester</td>
+                                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@grades.Type</td>
+                                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@grades.Grade/@grades.GradeTotal</td>
+                                        <td class="text-gray-900 px-6 py-4 whitespace-nowrap">@grades.GradePercentage%</td>
+                                    </tr>    
+                                }
+                            </tbody>
+                        </table>
+                        @if(role == "teacher")
+                        {
+                            <button onclick="openGradeModal(@enrolledStd.Id, @enrolledStd.CourseId)" class="block w-fit rounded-md bg-primary text-white px-4 py-2 mt-4 ml-auto">+ Add Grade</button>
+                        }
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+
+<script>
+    const openGradeModal = (studentCourseId, courseId) => {
+        const addGradeModal = document.querySelector("#addGrade-modal");
+        addGradeModal.classList.remove("hidden")
+        addGradeModal.querySelector("#studentCourseId").value = studentCourseId;
+        addGradeModal.querySelector("#returnUrl").value = `/grades/${courseId.toString()}`;
+    }
+    const closeGradeModal = () => {
+        document.querySelector("#addGrade-modal").classList.add("hidden")
+    }
+</script>
