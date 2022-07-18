@@ -3,6 +3,7 @@ using System;
 using E_Learning_I3332_MVC.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -11,15 +12,17 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_Learning_I3332_MVC.Migrations
 {
     [DbContext(typeof(MySQLDBContext))]
-    [Migration("20220709234454_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20220718183749_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.6")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("ProductVersion", "6.0.7")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("E_Learning_I3332_MVC.Models.Courses", b =>
                 {
@@ -27,26 +30,64 @@ namespace E_Learning_I3332_MVC.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("C_SpecializationId")
-                        .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseId"), 1L, 1);
 
                     b.Property<string>("CourseName")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("Credits")
                         .IsRequired()
                         .HasColumnType("int");
 
+                    b.Property<int?>("SpecializationId")
+                        .IsRequired()
+                        .HasColumnType("int");
+
                     b.HasKey("CourseId");
 
-                    b.HasIndex("C_SpecializationId");
+                    b.HasIndex("SpecializationId");
 
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("E_Learning_I3332_MVC.Models.Grades", b =>
+                {
+                    b.Property<int>("GradeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GradeId"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Grade")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GradePercentage")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GradeTotal")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentCourseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("GradeId");
+
+                    b.HasIndex("StudentCourseId");
+
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("E_Learning_I3332_MVC.Models.Roles", b =>
@@ -55,8 +96,10 @@ namespace E_Learning_I3332_MVC.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"), 1L, 1);
+
                     b.Property<string>("Name")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RoleId");
 
@@ -69,13 +112,15 @@ namespace E_Learning_I3332_MVC.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SpecializationId"), 1L, 1);
+
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SpecializationName")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("SpecializationId");
 
@@ -88,30 +133,32 @@ namespace E_Learning_I3332_MVC.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("CourseId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("EntolementDate")
-                        .HasColumnType("datetime");
-
-                    b.Property<int>("SC_CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SC_StudentId")
-                        .HasColumnType("int");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Semester")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("StudentId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SC_CourseId");
+                    b.HasIndex("CourseId");
 
-                    b.HasIndex("SC_StudentId");
+                    b.HasIndex("StudentId");
 
                     b.ToTable("StudentCourses");
                 });
@@ -122,26 +169,30 @@ namespace E_Learning_I3332_MVC.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentId"), 1L, 1);
+
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("JoinedDate")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("PhoneNumer")
                         .HasColumnType("int");
 
-                    b.Property<int>("S_SpecializationId")
+                    b.Property<int?>("SpecializationId")
+                        .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<int>("S_UserId")
+                    b.Property<int?>("UserId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("StudentId");
 
-                    b.HasIndex("S_SpecializationId");
+                    b.HasIndex("SpecializationId");
 
-                    b.HasIndex("S_UserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Students");
                 });
@@ -152,19 +203,22 @@ namespace E_Learning_I3332_MVC.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TeacherId"), 1L, 1);
+
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("JoinedDate")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("PhoneNumer")
                         .HasColumnType("int");
 
-                    b.Property<int>("T_SpecializationId")
+                    b.Property<int?>("SpecializationId")
+                        .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<int>("T_UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.Property<int?>("YearsOfExperience")
@@ -173,9 +227,9 @@ namespace E_Learning_I3332_MVC.Migrations
 
                     b.HasKey("TeacherId");
 
-                    b.HasIndex("T_SpecializationId");
+                    b.HasIndex("SpecializationId");
 
-                    b.HasIndex("T_UserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Teachers");
                 });
@@ -186,17 +240,19 @@ namespace E_Learning_I3332_MVC.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("CourseId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Semester")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("T_CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("T_TeacherId")
+                    b.Property<int?>("TeacherId")
                         .HasColumnType("int");
 
                     b.Property<int>("Year")
@@ -204,9 +260,9 @@ namespace E_Learning_I3332_MVC.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("T_CourseId");
+                    b.HasIndex("CourseId");
 
-                    b.HasIndex("T_TeacherId");
+                    b.HasIndex("TeacherId");
 
                     b.ToTable("Teaches");
                 });
@@ -217,28 +273,30 @@ namespace E_Learning_I3332_MVC.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
@@ -257,87 +315,90 @@ namespace E_Learning_I3332_MVC.Migrations
                 {
                     b.HasOne("E_Learning_I3332_MVC.Models.Specializations", "Specialization")
                         .WithMany()
-                        .HasForeignKey("C_SpecializationId")
+                        .HasForeignKey("SpecializationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Specialization");
                 });
 
+            modelBuilder.Entity("E_Learning_I3332_MVC.Models.Grades", b =>
+                {
+                    b.HasOne("E_Learning_I3332_MVC.Models.StudentCourses", "StudentCourse")
+                        .WithMany("StdGrades")
+                        .HasForeignKey("StudentCourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("StudentCourse");
+                });
+
             modelBuilder.Entity("E_Learning_I3332_MVC.Models.StudentCourses", b =>
                 {
-                    b.HasOne("E_Learning_I3332_MVC.Models.Courses", "CourseId")
+                    b.HasOne("E_Learning_I3332_MVC.Models.Courses", "Course")
                         .WithMany()
-                        .HasForeignKey("SC_CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CourseId");
 
-                    b.HasOne("E_Learning_I3332_MVC.Models.Students", "StudentId")
+                    b.HasOne("E_Learning_I3332_MVC.Models.Students", "Student")
                         .WithMany()
-                        .HasForeignKey("SC_StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StudentId");
 
-                    b.Navigation("CourseId");
+                    b.Navigation("Course");
 
-                    b.Navigation("StudentId");
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("E_Learning_I3332_MVC.Models.Students", b =>
                 {
                     b.HasOne("E_Learning_I3332_MVC.Models.Specializations", "Specialization")
                         .WithMany()
-                        .HasForeignKey("S_SpecializationId")
+                        .HasForeignKey("SpecializationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("E_Learning_I3332_MVC.Models.Users", "UserId")
+                    b.HasOne("E_Learning_I3332_MVC.Models.Users", "User")
                         .WithMany()
-                        .HasForeignKey("S_UserId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Specialization");
 
-                    b.Navigation("UserId");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("E_Learning_I3332_MVC.Models.Teachers", b =>
                 {
                     b.HasOne("E_Learning_I3332_MVC.Models.Specializations", "Specialization")
                         .WithMany()
-                        .HasForeignKey("T_SpecializationId")
+                        .HasForeignKey("SpecializationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("E_Learning_I3332_MVC.Models.Users", "UserId")
+                    b.HasOne("E_Learning_I3332_MVC.Models.Users", "User")
                         .WithMany()
-                        .HasForeignKey("T_UserId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Specialization");
 
-                    b.Navigation("UserId");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("E_Learning_I3332_MVC.Models.Teaches", b =>
                 {
-                    b.HasOne("E_Learning_I3332_MVC.Models.Courses", "CourseId")
+                    b.HasOne("E_Learning_I3332_MVC.Models.Courses", "Course")
                         .WithMany()
-                        .HasForeignKey("T_CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CourseId");
 
-                    b.HasOne("E_Learning_I3332_MVC.Models.Teachers", "TeacherId")
+                    b.HasOne("E_Learning_I3332_MVC.Models.Teachers", "Teacher")
                         .WithMany()
-                        .HasForeignKey("T_TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TeacherId");
 
-                    b.Navigation("CourseId");
+                    b.Navigation("Course");
 
-                    b.Navigation("TeacherId");
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("E_Learning_I3332_MVC.Models.Users", b =>
@@ -354,6 +415,11 @@ namespace E_Learning_I3332_MVC.Migrations
             modelBuilder.Entity("E_Learning_I3332_MVC.Models.Roles", b =>
                 {
                     b.Navigation("UsersList");
+                });
+
+            modelBuilder.Entity("E_Learning_I3332_MVC.Models.StudentCourses", b =>
+                {
+                    b.Navigation("StdGrades");
                 });
 #pragma warning restore 612, 618
         }

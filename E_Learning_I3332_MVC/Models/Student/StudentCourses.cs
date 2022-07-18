@@ -9,11 +9,9 @@ public class StudentCourses
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-    [Required]
     public Students? Student { get; set; }
     public int? StudentId { get; set; }
 
-    [Required]
     public Courses? Course { get; set; }
     public int? CourseId { get; set; }
 

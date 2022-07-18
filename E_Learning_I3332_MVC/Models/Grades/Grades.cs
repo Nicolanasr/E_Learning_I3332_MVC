@@ -22,7 +22,6 @@ public class Grades
     [StringLength(255, MinimumLength = 1)]
     public string? Type { get; set; }
 
-    [Required]
     public int StudentCourseId { get; set; }
     public StudentCourses StudentCourse { get; set; }
 

@@ -19,19 +19,7 @@ namespace E_Learning_I3332_MVC.Controllers
             _db = db;
         }
 
-
-        //[HttpGet]
-        //public async Task<IActionResult> Index(string Coursessearch)
-        // {
-        // ViewData["Getcoursesdetails"]= Coursessearch;  
-        //  var coursesquery= from x in _db.Courses select x;
-        // if(!String.IsNullOrEmpty(Coursessearch))
-        // {
-        //    coursesquery = coursesquery.Where(x => x.CourseName.Contains(Coursessearch) || x.CourseName.Contains(Coursessearch));
-        // }
-        //  return View(await coursesquery.AsNoTracking().ToListAsync());
-        // }
-        public async Task<IActionResult> Index(int CourseIdint, string searchString)
+        /*public async Task<IActionResult> Index(int CourseIdint, string searchString)
         {
             IQueryable<int> dridQuery = from m in _db.Courses
                                         orderby m.CourseId
@@ -58,14 +46,12 @@ namespace E_Learning_I3332_MVC.Controllers
             };
 
             return View();
-        }
+        }*/
 
 
-
-        
         [Authorize]
         [Route("courses")]
-        public ActionResult Index()
+        public ActionResult Index(string? teacherName, string? courseName)
         {
             var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
             var userId = claimsIdentity?.FindFirst("userId");
@@ -132,6 +118,13 @@ namespace E_Learning_I3332_MVC.Controllers
 
                 ViewData["teachesCoursesDetails"] = teachesCoursesDetails;
                 ViewData["teaches"] = teachersCourses;
+            }
+
+            if(courseName != null && _db.Courses != null)
+            {
+                AllCourses = _db.Courses
+                                .Where(c => c.SpecializationId.ToString() == specializationId.ToString() && c.CourseName.ToLower().Contains(courseName.ToLower()))
+                                .ToList<Courses>();
             }
 
             ViewData["coursesTeachers"] = coursesTeachers;

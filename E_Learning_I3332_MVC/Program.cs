@@ -19,7 +19,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddDbContext<E_Learning_I3332_MVC.Models.MySQLDBContext>(options => 
     {
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+        options.UseSqlServer(connectionString);
     });
 
 var app = builder.Build();
