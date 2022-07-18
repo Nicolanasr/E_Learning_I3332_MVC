@@ -2,6 +2,10 @@
 
 @{
     ViewData["Title"] = "Courses";
+
+
+
+
     
     IEnumerable<int?>? enrolled = ViewData["enrolled"] as IEnumerable<int?>;
     IEnumerable<int?>? teaches = ViewData["teaches"] as IEnumerable<int?>;
@@ -9,6 +13,20 @@
     List<Courses> AllCourses = ViewData["AllCourses"] as List<Courses>;
     Dictionary<int?, int> teachesCoursesDetails = ViewData["teachesCoursesDetails"] as Dictionary<int?, int>;
 }
+
+<form method="get"asp-action="Index">
+   <p>
+        Teacher ID: <select asp-for="CourseName" > 
+            <option value="">All</option>
+        </select>
+
+        Course Name:
+        <input type="text" asp-for="CourseId"/>
+        <input type="submit" value="Filter" />
+
+    </p>
+
+</form>
 
 <div class="fixed top-0 bottom-0 left-0 right-0 flex z-[99] hidden" id="enrol-modal">
     <div class="bg-black opacity-20 absolute top-0 bottom-0 left-0 right-0 z-10" onclick="closeEnrolModal()"></div>

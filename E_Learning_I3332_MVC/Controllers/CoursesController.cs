@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using E_Learning_I3332_MVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_Learning_I3332_MVC.Controllers
@@ -9,12 +10,59 @@ namespace E_Learning_I3332_MVC.Controllers
     public class CoursesController : Controller
     {
         private readonly MySQLDBContext _db;
+
+        public object TeacherIDQuery { get; private set; }
+
         [ActivatorUtilitiesConstructorAttribute]
         public CoursesController(MySQLDBContext db)
         {
             _db = db;
         }
 
+
+        //[HttpGet]
+        //public async Task<IActionResult> Index(string Coursessearch)
+        // {
+        // ViewData["Getcoursesdetails"]= Coursessearch;  
+        //  var coursesquery= from x in _db.Courses select x;
+        // if(!String.IsNullOrEmpty(Coursessearch))
+        // {
+        //    coursesquery = coursesquery.Where(x => x.CourseName.Contains(Coursessearch) || x.CourseName.Contains(Coursessearch));
+        // }
+        //  return View(await coursesquery.AsNoTracking().ToListAsync());
+        // }
+        public async Task<IActionResult> Index(int CourseIdint, string searchString)
+        {
+            IQueryable<int> dridQuery = from m in _db.Courses
+                                        orderby m.CourseId
+                                        select m.CourseId;
+
+            var operations = from m in _db.Courses
+                             select m;
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                operations = operations.Where(o => o.CourseName.Contains(searchString));
+
+            }
+
+            if (CourseIdint != 0)
+            {
+                operations = operations.Where(op => op.CourseId == CourseIdint);
+            }
+
+            var OperationNameList = new 
+            {
+               // TeacherIds = new SelectList(await TeacherIDQuery.Distinct().ToListAsync()),
+                Courses = await operations.ToListAsync()
+            };
+
+            return View();
+        }
+
+
+
+        
         [Authorize]
         [Route("courses")]
         public ActionResult Index()
